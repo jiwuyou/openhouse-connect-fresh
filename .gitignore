@@ -32,6 +32,9 @@ go.env
 
 # Dependency directories
 vendor/
+.gocache/
+.gomodcache/
+.gopath/
 
 # ============================================================================
 # Project-specific
@@ -61,6 +64,9 @@ node_modules/
 dist/
 build/
 bin/
+!overlay/smallphone/bin/
+overlay/smallphone/bin/*
+!overlay/smallphone/bin/openhouse-cc-connect-wrapper.sh
 release/
 # Keep web/dist directory (for embedded admin UI) but ignore build artifacts
 web/dist/*
@@ -73,6 +79,9 @@ web/tsconfig.tsbuildinfo
 # ============================================================================
 test/
 scripts/
+!scripts/
+scripts/*
+!scripts/openhouse-*.sh
 tmp/
 temp/
 *.tmp

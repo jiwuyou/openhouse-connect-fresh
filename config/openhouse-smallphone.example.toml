@@ -1,0 +1,59 @@
+# OpenHouse SmallPhone cc-connect example.
+#
+# Copy to the device runtime config path, for example:
+#   /root/.smallphoneai/cc-connect.toml
+#
+# Secrets are loaded by the launch wrapper from:
+#   /root/.smallphoneai/agent-env
+#
+# Do not write real API keys or tokens into this example.
+
+language = "en"
+data_dir = "/root/.smallphoneai/cc-connect-data"
+attachment_send = "on"
+shell = "bash"
+shell_profile = "test -r /root/.smallphoneai/agent-env && set -a && . /root/.smallphoneai/agent-env && set +a"
+
+[log]
+level = "info"
+
+[bridge]
+enabled = true
+port = 21010
+token = "${OPENHOUSE_BRIDGE_TOKEN}"
+path = "/bridge/ws"
+cors_origins = [
+  "http://127.0.0.1:21020",
+  "http://localhost:21020",
+  "smallphone://openhouse",
+]
+
+[management]
+enabled = true
+port = 21020
+token = "${OPENHOUSE_MANAGEMENT_TOKEN}"
+cors_origins = [
+  "http://127.0.0.1:21020",
+  "http://localhost:21020",
+  "smallphone://openhouse",
+]
+
+[webhook]
+enabled = true
+port = 21040
+token = "${OPENHOUSE_WEBHOOK_TOKEN}"
+path = "/hook"
+
+[[projects]]
+name = "smallphone-default"
+admin_from = "*"
+
+[projects.agent]
+type = "codex"
+
+[projects.agent.options]
+work_dir = "/root/workspace"
+mode = "default"
+
+# SmallPhone connects through the global [bridge] server above, so no IM
+# platform is required for the runtime path.

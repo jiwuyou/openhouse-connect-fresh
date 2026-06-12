@@ -1,10 +1,19 @@
 import api from './client';
+import type {
+  BridgeArtifact,
+  BridgeAttachmentPayload,
+  BridgeMetadata,
+} from '@/types/bridgeAttachments';
 
-export interface LastMessage {
+export interface SessionMessage extends BridgeAttachmentPayload {
   role: string;
   content: string;
   timestamp: string;
+  artifacts?: BridgeArtifact[];
+  metadata?: BridgeMetadata;
 }
+
+export interface LastMessage extends SessionMessage {}
 
 export interface Session {
   id: string;
@@ -24,7 +33,7 @@ export interface Session {
 
 export interface SessionDetail extends Session {
   agent_session_id: string;
-  history: { role: string; content: string; timestamp: string }[];
+  history: SessionMessage[];
 }
 
 export const listSessions = (project: string) =>

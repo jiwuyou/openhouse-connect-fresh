@@ -1,0 +1,27 @@
+# Copy to /root/.smallphoneai/agent-env and set permissions to 600.
+# Leave this repository copy empty. Do not commit real keys or tokens.
+
+export OPENHOUSE_BRIDGE_TOKEN=""
+export OPENHOUSE_MANAGEMENT_TOKEN=""
+export OPENHOUSE_WEBHOOK_TOKEN=""
+
+export ANTHROPIC_API_KEY=""
+export ANTHROPIC_BASE_URL=""
+export ANTHROPIC_MODEL=""
+
+export OPENAI_API_KEY=""
+export OPENAI_BASE_URL=""
+export OPENAI_MODEL=""
+
+export CODEX_HOME="/root/.codex"
+export CODEX_API_KEY=""
+
+export OPENCODE_CONFIG="/root/.config/opencode"
+export OPENCODE_DISABLE_AUTOUPDATE="1"
+
+export GEMINI_API_KEY=""
+export GOOGLE_APPLICATION_CREDENTIALS=""
+
+export HTTP_PROXY=""
+export HTTPS_PROXY=""
+export NO_PROXY="127.0.0.1,localhost"

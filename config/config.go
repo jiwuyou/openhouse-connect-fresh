@@ -1001,7 +1001,8 @@ func (c *Config) validateInternal(permissive bool) error {
 		if proj.Agent.Type == "" {
 			return fmt.Errorf("config: %s.agent.type is required", prefix)
 		}
-		if len(proj.Platforms) == 0 && !permissive {
+		bridgeEnabled := c.Bridge.Enabled != nil && *c.Bridge.Enabled
+		if len(proj.Platforms) == 0 && !permissive && !bridgeEnabled {
 			return fmt.Errorf("config: %s needs at least one [[projects.platforms]]", prefix)
 		}
 		for j, p := range proj.Platforms {

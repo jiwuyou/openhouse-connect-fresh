@@ -1,0 +1,55 @@
+{
+  "id": "openhouse.cc-connect",
+  "displayName": "OpenHouse cc-connect",
+  "description": "Runs upstream cc-connect for SmallPhone through the OpenHouse overlay wrapper.",
+  "workingDirectory": "/root",
+  "command": "/opt/openhouse/bin/openhouse-cc-connect-wrapper.sh",
+  "args": [],
+  "environment": {
+    "OPENHOUSE_AGENT_ENV": "/root/.smallphoneai/agent-env",
+    "CC_CONNECT_CONFIG": "/root/.smallphoneai/cc-connect.toml",
+    "CC_CONNECT_BIN": "/opt/openhouse/bin/cc-connect"
+  },
+  "restart": {
+    "policy": "always",
+    "delaySeconds": 5
+  },
+  "ports": [
+    {
+      "name": "bridge",
+      "protocol": "tcp",
+      "host": "127.0.0.1",
+      "port": 21010
+    },
+    {
+      "name": "management",
+      "protocol": "tcp",
+      "host": "127.0.0.1",
+      "port": 21020
+    },
+    {
+      "name": "webhook",
+      "protocol": "tcp",
+      "host": "127.0.0.1",
+      "port": 21040
+    }
+  ],
+  "healthChecks": [
+    {
+      "name": "bridge",
+      "type": "tcp",
+      "host": "127.0.0.1",
+      "port": 21010,
+      "intervalSeconds": 10,
+      "timeoutSeconds": 2
+    },
+    {
+      "name": "management",
+      "type": "tcp",
+      "host": "127.0.0.1",
+      "port": 21020,
+      "intervalSeconds": 10,
+      "timeoutSeconds": 2
+    }
+  ]
+}

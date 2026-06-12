@@ -1,20 +1,38 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import api from '@/api/client';
+import type { BridgeAttachmentPayload } from '@/types/bridgeAttachments';
+
+export type {
+  BridgeAttachmentPayload,
+  BridgeAudioAttachment,
+  BridgeFileAttachment,
+  BridgeImageAttachment,
+} from '@/types/bridgeAttachments';
+
+type BridgeScoped = { session_key: string };
+type BridgeReplyScoped = BridgeScoped & { reply_ctx: string };
 
 export type BridgeIncoming =
   | { type: 'register_ack'; ok: boolean; error?: string }
-  | { type: 'reply'; session_key: string; reply_ctx: string; content: string; format?: string }
-  | { type: 'reply_stream'; session_key: string; reply_ctx: string; delta: string; full_text: string; preview_handle?: string; done: boolean }
-  | { type: 'card'; session_key: string; reply_ctx: string; card: any }
-  | { type: 'buttons'; session_key: string; reply_ctx: string; content: string; buttons: { text: string; data: string }[][] }
-  | { type: 'typing_start'; session_key: string }
-  | { type: 'typing_stop'; session_key: string }
-  | { type: 'preview_start'; ref_id: string; session_key: string; reply_ctx: string; content: string }
-  | { type: 'update_message'; session_key: string; preview_handle: string; content: string }
-  | { type: 'delete_message'; session_key: string; preview_handle: string }
+  | (BridgeReplyScoped & { type: 'reply'; content: string; format?: string })
+  | (BridgeReplyScoped & { type: 'reply_stream'; delta: string; full_text: string; preview_handle?: string; done: boolean })
+  | (BridgeReplyScoped & { type: 'image'; data: string; mime_type: string; file_name?: string })
+  | (BridgeReplyScoped & { type: 'file'; data: string; mime_type: string; file_name: string })
+  | (BridgeReplyScoped & { type: 'audio'; data: string; format: string; duration?: number; mime_type?: string; file_name?: string })
+  | (BridgeReplyScoped & { type: 'card'; card: any })
+  | (BridgeReplyScoped & { type: 'buttons'; content: string; buttons: { text: string; data: string }[][] })
+  | (BridgeScoped & { type: 'typing_start' })
+  | (BridgeScoped & { type: 'typing_stop' })
+  | (BridgeReplyScoped & { type: 'preview_start'; ref_id: string; content: string })
+  | (BridgeScoped & { type: 'update_message'; preview_handle: string; content: string })
+  | (BridgeScoped & { type: 'delete_message'; preview_handle: string })
   | { type: 'error'; code: string; message: string }
   | { type: 'pong'; ts: number }
   | { type: string; [key: string]: any };
+
+export interface BridgeSendMessagePayload extends BridgeAttachmentPayload {
+  content: string;
+}
 
 export interface BridgeConfig {
   port: number;
@@ -45,16 +63,23 @@ export function useBridgeSocket({ bridgeCfg, platformName = 'web', sessionKey, p
     }
   }, []);
 
-  const sendMessage = useCallback((content: string) => {
+  const sendMessage = useCallback((contentOrPayload: string | BridgeSendMessagePayload, attachments?: BridgeAttachmentPayload) => {
+    const payload: BridgeSendMessagePayload = typeof contentOrPayload === 'string'
+      ? { content: contentOrPayload, ...attachments }
+      : contentOrPayload;
+
     send({
       type: 'message',
       msg_id: `web-${Date.now()}`,
       session_key: sessionKey,
       user_id: 'web-admin',
       user_name: 'Web Admin',
-      content,
+      content: payload.content,
       reply_ctx: sessionKey,
       project: projectName || '',
+      images: payload.images && payload.images.length > 0 ? payload.images : undefined,
+      files: payload.files && payload.files.length > 0 ? payload.files : undefined,
+      audio: payload.audio || undefined,
     });
   }, [send, sessionKey, projectName]);
 
