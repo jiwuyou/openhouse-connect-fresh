@@ -49,10 +49,11 @@ name = "smallphone-default"
 admin_from = "*"
 
 [projects.agent]
-type = "codex"
+type = "claudecode"
 
 [projects.agent.options]
 work_dir = "/root/workspace"
+cli_path = "/root/.npm-global/bin/claude"
 mode = "default"
 
 # SmallPhone connects through the global [bridge] server above, so no IM

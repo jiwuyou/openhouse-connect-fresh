@@ -1,55 +1,44 @@
 {
-  "id": "openhouse.cc-connect",
-  "displayName": "OpenHouse cc-connect",
-  "description": "Runs upstream cc-connect for SmallPhone through the OpenHouse overlay wrapper.",
-  "workingDirectory": "/root",
-  "command": "/opt/openhouse/bin/openhouse-cc-connect-wrapper.sh",
-  "args": [],
-  "environment": {
-    "OPENHOUSE_AGENT_ENV": "/root/.smallphoneai/agent-env",
-    "CC_CONNECT_CONFIG": "/root/.smallphoneai/cc-connect.toml",
-    "CC_CONNECT_BIN": "/opt/openhouse/bin/cc-connect"
+  "name": "cc-connect",
+  "description": "OpenHouse Connect (cc-connect): bridge + management + webhook",
+  "provider": "process",
+  "command": [
+    "/bin/sh",
+    "/root/.smallphoneai/bin/openhouse-cc-connect-launcher.sh"
+  ],
+  "working_dir": "/root/smallphoneai-repos/openhouse-connect",
+  "env": {
+    "PATH": "/root/.npm-global/bin:/root/.local/node/bin:/root/.opencode/bin:/root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/system/bin:/system/xbin:/data/data/com.termux/files/usr/bin",
+    "HOME": "/root",
+    "USER": "root",
+    "LOGNAME": "root",
+    "SHELL": "/bin/bash",
+    "XDG_CONFIG_HOME": "/root/.config",
+    "XDG_CACHE_HOME": "/root/.cache",
+    "XDG_DATA_HOME": "/root/.local/share"
   },
+  "runtime": {},
   "restart": {
-    "policy": "always",
-    "delaySeconds": 5
+    "mode": "always",
+    "max_retries": 0
   },
-  "ports": [
+  "health": [
     {
-      "name": "bridge",
-      "protocol": "tcp",
-      "host": "127.0.0.1",
-      "port": 21010
+      "type": "tcp",
+      "address": "127.0.0.1:21010",
+      "interval": "30s",
+      "timeout": "3s"
     },
     {
-      "name": "management",
-      "protocol": "tcp",
-      "host": "127.0.0.1",
-      "port": 21020
-    },
-    {
-      "name": "webhook",
-      "protocol": "tcp",
-      "host": "127.0.0.1",
-      "port": 21040
+      "type": "tcp",
+      "address": "127.0.0.1:21020",
+      "interval": "30s",
+      "timeout": "3s"
     }
   ],
-  "healthChecks": [
-    {
-      "name": "bridge",
-      "type": "tcp",
-      "host": "127.0.0.1",
-      "port": 21010,
-      "intervalSeconds": 10,
-      "timeoutSeconds": 2
-    },
-    {
-      "name": "management",
-      "type": "tcp",
-      "host": "127.0.0.1",
-      "port": 21020,
-      "intervalSeconds": 10,
-      "timeoutSeconds": 2
-    }
+  "enabled": true,
+  "tags": [
+    "group:local-stack",
+    "openhouse-component:cc-connect"
   ]
 }

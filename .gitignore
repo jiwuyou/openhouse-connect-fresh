@@ -2,6 +2,7 @@
 # Binary outputs
 # ============================================================================
 /cc-connect
+!/cc-connect
 cc-connect.bak-*
 *.exe
 *.exe~
@@ -82,6 +83,9 @@ scripts/
 !scripts/
 scripts/*
 !scripts/openhouse-*.sh
+!scripts/install.sh
+!scripts/check.sh
+!scripts/register-service.sh
 tmp/
 temp/
 *.tmp

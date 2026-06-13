@@ -10,7 +10,7 @@ source modules.
   `/root/.smallphoneai/agent-env`, using `bash -lc` for Ubuntu/proot.
 - `env/agent-env.example`: variable-name template with empty values only.
 - `service-manager/cc-connect.service.json`: service-manager registration
-  template.
+  template matching the `ServiceSpec` shape used by service-manager.
 
 The canonical config example is outside this overlay:
 
@@ -18,7 +18,8 @@ The canonical config example is outside this overlay:
 config/openhouse-smallphone.example.toml
 ```
 
-The payload build script packages both this overlay and the config example:
+The payload build script packages this overlay, the config example, the
+offline `cc-connect` ARM64 binary, and runtime scripts:
 
 ```bash
 scripts/openhouse-build-smallphone-payload.sh
@@ -39,3 +40,6 @@ Do not place real secrets in the overlay. Runtime secrets belong in:
 ```
 
 The wrapper sources that file without printing values.
+`scripts/register-service.sh` creates this file from a device-local
+OpenHouseAI Claude Code shell block when available; otherwise it leaves a
+600-permission placeholder for on-device setup.

@@ -19,7 +19,7 @@ if [[ ! -r "$config_path" ]]; then
   fi
 fi
 
-command_args=("$cc_connect_bin" "-config" "$config_path")
+command_args=("$cc_connect_bin" "--config" "$config_path")
 if [[ "$#" -gt 0 ]]; then
   command_args+=("$@")
 fi
