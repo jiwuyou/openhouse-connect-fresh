@@ -53,7 +53,8 @@ type = "claudecode"
 
 [projects.agent.options]
 work_dir = "/root/workspace"
-cli_path = "/root/.npm-global/bin/claude"
+# register-service.sh writes an auto-detected absolute path on device.
+cli_path = "claude"
 mode = "default"
 
 # SmallPhone connects through the global [bridge] server above, so no IM

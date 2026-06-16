@@ -19,7 +19,6 @@ cfg_path=${CC_CONNECT_CONFIG_PATH:-/root/.smallphoneai/cc-connect.toml}
 work_dir=${CC_CONNECT_SMALLPHONE_WORK_DIR:-/root/workspace}
 agent_type=${CC_CONNECT_SMALLPHONE_AGENT_TYPE:-claudecode}
 agent_mode=${CC_CONNECT_SMALLPHONE_AGENT_MODE:-default}
-claude_cli=${CC_CONNECT_SMALLPHONE_CLAUDE_CLI:-/root/.npm-global/bin/claude}
 launcher_path=${CC_CONNECT_LAUNCHER_PATH:-/root/.smallphoneai/bin/openhouse-cc-connect-launcher.sh}
 service_path="/root/.npm-global/bin:/root/.local/node/bin:/root/.opencode/bin:/root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/system/bin:/system/xbin:/data/data/com.termux/files/usr/bin"
 service_home=${CC_CONNECT_SERVICE_HOME:-/root}
@@ -28,6 +27,31 @@ service_shell=${CC_CONNECT_SERVICE_SHELL:-/bin/bash}
 xdg_config_home=${XDG_CONFIG_HOME:-${service_home}/.config}
 xdg_cache_home=${XDG_CACHE_HOME:-${service_home}/.cache}
 xdg_data_home=${XDG_DATA_HOME:-${service_home}/.local/share}
+
+detect_claude_cli() {
+  if [ -n "${CC_CONNECT_SMALLPHONE_CLAUDE_CLI:-}" ]; then
+    printf '%s\n' "${CC_CONNECT_SMALLPHONE_CLAUDE_CLI}"
+    return
+  fi
+
+  if command -v claude >/dev/null 2>&1; then
+    command -v claude
+    return
+  fi
+
+  for candidate in \
+    /usr/local/bin/claude \
+    /root/.local/bin/claude \
+    /root/.npm-global/bin/claude \
+    /root/.local/node/bin/claude; do
+    if [ -x "${candidate}" ]; then
+      printf '%s\n' "${candidate}"
+      return
+    fi
+  done
+
+  printf '%s\n' /root/.npm-global/bin/claude
+}
 
 random_token() {
   if command -v python3 >/dev/null 2>&1; then
@@ -147,6 +171,7 @@ fi
 
 mkdir -p "$(dirname "${cfg_path}")" "$(dirname "${launcher_path}")" "${work_dir}" "${xdg_config_home}" "${xdg_cache_home}" "${xdg_data_home}"
 ensure_agent_env
+claude_cli=$(detect_claude_cli)
 
 bridge_token=$(token_value "${OPENHOUSE_BRIDGE_TOKEN:-${CC_CONNECT_BRIDGE_TOKEN:-}}" bridge token)
 management_token=$(token_value "${OPENHOUSE_MANAGEMENT_TOKEN:-${CC_CONNECT_MANAGEMENT_TOKEN:-}}" management token)
