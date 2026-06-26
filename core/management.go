@@ -200,7 +200,7 @@ func (m *ManagementServer) Start() {
 	handler := m.buildHandler(mux)
 
 	m.server = &http.Server{
-		Addr:    fmt.Sprintf(":%d", m.port),
+		Addr:    fmt.Sprintf("127.0.0.1:%d", m.port),
 		Handler: handler,
 	}
 	go func() {

@@ -219,7 +219,7 @@ func (p *Platform) Start(handler core.MessageHandler) error {
 	mux.HandleFunc(p.callbackPath, p.callbackHandler)
 
 	p.server = &http.Server{
-		Addr:    ":" + p.port,
+		Addr:    "127.0.0.1:" + p.port,
 		Handler: mux,
 	}
 

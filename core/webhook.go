@@ -64,7 +64,7 @@ func (ws *WebhookServer) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc(ws.path, ws.handleHook)
 
-	addr := fmt.Sprintf(":%d", ws.port)
+	addr := fmt.Sprintf("127.0.0.1:%d", ws.port)
 	ws.server = &http.Server{Addr: addr, Handler: mux}
 
 	go func() {

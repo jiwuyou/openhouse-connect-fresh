@@ -45,7 +45,7 @@ token = "${OPENHOUSE_WEBHOOK_TOKEN}"
 path = "/hook"
 
 [[projects]]
-name = "smallphone-default"
+name = "smallphone-claude"
 admin_from = "*"
 
 [projects.agent]
@@ -56,6 +56,30 @@ work_dir = "/root/workspace"
 # register-service.sh writes an auto-detected absolute path on device.
 cli_path = "claude"
 mode = "default"
+
+[[projects]]
+name = "smallphone-opencode"
+admin_from = "*"
+
+[projects.agent]
+type = "opencode"
+
+[projects.agent.options]
+work_dir = "/root/workspace"
+cli_path = "opencode"
+mode = "yolo"
+
+[[projects]]
+name = "smallphone-codex"
+admin_from = "*"
+
+[projects.agent]
+type = "codex"
+
+[projects.agent.options]
+work_dir = "/root/workspace"
+cli_path = "codex"
+mode = "suggest"
 
 # SmallPhone connects through the global [bridge] server above, so no IM
 # platform is required for the runtime path.

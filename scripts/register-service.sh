@@ -17,8 +17,12 @@ webhook_port=${CC_CONNECT_WEBHOOK_PORT:-21040}
 agent_env=${OPENHOUSE_AGENT_ENV:-/root/.smallphoneai/agent-env}
 cfg_path=${CC_CONNECT_CONFIG_PATH:-/root/.smallphoneai/cc-connect.toml}
 work_dir=${CC_CONNECT_SMALLPHONE_WORK_DIR:-/root/workspace}
-agent_type=${CC_CONNECT_SMALLPHONE_AGENT_TYPE:-claudecode}
-agent_mode=${CC_CONNECT_SMALLPHONE_AGENT_MODE:-default}
+claude_work_dir=${CC_CONNECT_SMALLPHONE_CLAUDE_WORK_DIR:-${work_dir}}
+opencode_work_dir=${CC_CONNECT_SMALLPHONE_OPENCODE_WORK_DIR:-${work_dir}}
+codex_work_dir=${CC_CONNECT_SMALLPHONE_CODEX_WORK_DIR:-${work_dir}}
+claude_mode=${CC_CONNECT_SMALLPHONE_CLAUDE_MODE:-default}
+opencode_mode=${CC_CONNECT_SMALLPHONE_OPENCODE_MODE:-yolo}
+codex_mode=${CC_CONNECT_SMALLPHONE_CODEX_MODE:-suggest}
 launcher_path=${CC_CONNECT_LAUNCHER_PATH:-/root/.smallphoneai/bin/openhouse-cc-connect-launcher.sh}
 service_path="/root/.npm-global/bin:/root/.local/node/bin:/root/.opencode/bin:/root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/system/bin:/system/xbin:/data/data/com.termux/files/usr/bin"
 service_home=${CC_CONNECT_SERVICE_HOME:-/root}
@@ -51,6 +55,57 @@ detect_claude_cli() {
   done
 
   printf '%s\n' /root/.npm-global/bin/claude
+}
+
+detect_opencode_cli() {
+  if [ -n "${CC_CONNECT_SMALLPHONE_OPENCODE_CLI:-}" ]; then
+    printf '%s\n' "${CC_CONNECT_SMALLPHONE_OPENCODE_CLI}"
+    return
+  fi
+
+  if command -v opencode >/dev/null 2>&1; then
+    command -v opencode
+    return
+  fi
+
+  for candidate in \
+    /usr/local/bin/opencode \
+    /root/.local/bin/opencode \
+    /root/.opencode/bin/opencode \
+    /root/.npm-global/bin/opencode \
+    /root/.local/node/bin/opencode; do
+    if [ -x "${candidate}" ]; then
+      printf '%s\n' "${candidate}"
+      return
+    fi
+  done
+
+  printf '%s\n' /root/.npm-global/bin/opencode
+}
+
+detect_codex_cli() {
+  if [ -n "${CC_CONNECT_SMALLPHONE_CODEX_CLI:-}" ]; then
+    printf '%s\n' "${CC_CONNECT_SMALLPHONE_CODEX_CLI}"
+    return
+  fi
+
+  if command -v codex >/dev/null 2>&1; then
+    command -v codex
+    return
+  fi
+
+  for candidate in \
+    /usr/local/bin/codex \
+    /root/.local/bin/codex \
+    /root/.npm-global/bin/codex \
+    /root/.local/node/bin/codex; do
+    if [ -x "${candidate}" ]; then
+      printf '%s\n' "${candidate}"
+      return
+    fi
+  done
+
+  printf '%s\n' /root/.npm-global/bin/codex
 }
 
 random_token() {
@@ -169,9 +224,11 @@ if [ -z "${bin_path}" ]; then
   exit 0
 fi
 
-mkdir -p "$(dirname "${cfg_path}")" "$(dirname "${launcher_path}")" "${work_dir}" "${xdg_config_home}" "${xdg_cache_home}" "${xdg_data_home}"
+mkdir -p "$(dirname "${cfg_path}")" "$(dirname "${launcher_path}")" "${claude_work_dir}" "${opencode_work_dir}" "${codex_work_dir}" "${xdg_config_home}" "${xdg_cache_home}" "${xdg_data_home}"
 ensure_agent_env
 claude_cli=$(detect_claude_cli)
+opencode_cli=$(detect_opencode_cli)
+codex_cli=$(detect_codex_cli)
 
 bridge_token=$(token_value "${OPENHOUSE_BRIDGE_TOKEN:-${CC_CONNECT_BRIDGE_TOKEN:-}}" bridge token)
 management_token=$(token_value "${OPENHOUSE_MANAGEMENT_TOKEN:-${CC_CONNECT_MANAGEMENT_TOKEN:-}}" management token)
@@ -207,16 +264,40 @@ token = "${webhook_token}"
 path = "/hook"
 
 [[projects]]
-name = "smallphone-default"
+name = "smallphone-claude"
 admin_from = "*"
 
 [projects.agent]
-type = "${agent_type}"
+type = "claudecode"
 
 [projects.agent.options]
-work_dir = "${work_dir}"
+work_dir = "${claude_work_dir}"
 cli_path = "${claude_cli}"
-mode = "${agent_mode}"
+mode = "${claude_mode}"
+
+[[projects]]
+name = "smallphone-opencode"
+admin_from = "*"
+
+[projects.agent]
+type = "opencode"
+
+[projects.agent.options]
+work_dir = "${opencode_work_dir}"
+cli_path = "${opencode_cli}"
+mode = "${opencode_mode}"
+
+[[projects]]
+name = "smallphone-codex"
+admin_from = "*"
+
+[projects.agent]
+type = "codex"
+
+[projects.agent.options]
+work_dir = "${codex_work_dir}"
+cli_path = "${codex_cli}"
+mode = "${codex_mode}"
 EOF
 cat >"${launcher_path}" <<EOF
 #!/bin/sh

@@ -219,7 +219,7 @@ func (bs *BridgeServer) Start() {
 	mux.HandleFunc("/bridge/sessions", bs.corsHTTP(bs.authHTTP(bs.handleSessions)))
 	mux.HandleFunc("/bridge/sessions/", bs.corsHTTP(bs.authHTTP(bs.handleSessionRoutes)))
 
-	addr := fmt.Sprintf(":%d", bs.port)
+	addr := fmt.Sprintf("127.0.0.1:%d", bs.port)
 	bs.server = &http.Server{Addr: addr, Handler: mux}
 
 	go func() {
